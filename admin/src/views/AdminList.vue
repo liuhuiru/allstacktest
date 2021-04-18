@@ -1,16 +1,15 @@
   \<template>
   <div>
     <el-table :data="items" stripe style="width: 100%">
-      <el-table-column prop="username" label="用户名" width="120">
+      <el-table-column prop="_id" label="ID" width=""> </el-table-column>
+      <el-table-column prop="username" label="用户名" width="">
       </el-table-column>
-      <el-table-column prop="password" label="密码" width="120">
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" width="150">
+      <el-table-column fixed="right" label="操作" width="">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            @click="$router.push(`/researcher/edit/${scope.row._id}`)"
+            @click="$router.push(`/admin_users/edit/${scope.row._id}`)"
             >编辑</el-button
           >
           <el-button
@@ -34,7 +33,7 @@ export default {
     };
   },
   methods: {
-    //获取科研人员信息
+    //获取管理人员信息
     async fetch() {
       const res = await this.$http.get("admin_users");
       this.items = res.data;

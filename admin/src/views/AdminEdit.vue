@@ -15,7 +15,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="密码">
-              <el-input v-model="model.password" type="passsword"></el-input>
+              <el-input v-model="model.password" type="password"></el-input>
             </el-form-item>
           </el-col>
         </el-row>

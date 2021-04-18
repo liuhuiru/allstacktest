@@ -1,19 +1,23 @@
 <template>
   <div>
     <el-table :data="items" stripe style="width: 100%">
-      <el-table-column prop="name" label="用户名" width="120">
+      <el-table-column prop="name" label="项目名称" width="200">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120"> </el-table-column>
-      <el-table-column prop="age" label="年龄" width="100"> </el-table-column>
-      <el-table-column prop="gender" label="性别" width="100">
+      <el-table-column prop="director" label="项目负责人" width="120">
       </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="200"> </el-table-column>
-      <el-table-column prop="degree" label="最后学位" width="200">
+      <el-table-column prop="funds" label="项目经费" width="120">
       </el-table-column>
-      <el-table-column prop="direction" label="研究方向" width="200">
+      <el-table-column prop="level" label="项目级别" width="120">
       </el-table-column>
-      <el-table-column prop="title" label="职称" width="180"> </el-table-column>
-      <el-table-column prop="institution" label="所属单位" width="180">
+      <el-table-column prop="type" label="项目类型" width="120">
+      </el-table-column>
+      <el-table-column prop="progress" label="项目进度" width="120">
+      </el-table-column>
+      <el-table-column prop="start" label="研究开始时间" width="120">
+      </el-table-column>
+      <el-table-column prop="end" label="研究结束时间" width="120">
+      </el-table-column>
+      <el-table-column prop="midterm" label="中期考核时间" width="120">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
@@ -23,7 +27,7 @@
           <el-button
             type="text"
             size="small"
-            @click="$router.push(`/researcher/edit/${scope.row._id}`)"
+            @click="$router.push(`/project/edit/${scope.row._id}`)"
             >编辑</el-button
           >
           <el-button
@@ -41,6 +45,7 @@
 
 <script>
 export default {
+  name: "ProjectList",
   data() {
     return {
       items: [],
@@ -49,7 +54,7 @@ export default {
   methods: {
     //获取科研人员信息
     async fetch() {
-      const res = await this.$http.get("researcher");
+      const res = await this.$http.get("project");
       // console.log("res", res);
       this.items = res.data;
     },
@@ -62,7 +67,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$http.delete(`researcher/${row._id}`);
+          this.$http.delete(`project/${row._id}`);
           this.$message({
             type: "success",
             message: "删除成功!",
