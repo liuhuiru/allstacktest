@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const assert = require("http-assert")
 const AdminUser = require('../models/AdminUser')
+const Researcher = require('../models/Researcher')
 
 
 module.exports = options => {
@@ -17,7 +18,7 @@ module.exports = options => {
     const { id } = jwt.verify(token, req.app.get('secret'))
     // console.log(id)
     assert(id, 401, '请先登录')
-    req.user = await AdminUser.findById(id)
+    req.user = await (AdminUser.findById(id)) || (Researcher.findById(id))
     // console.log(req.user)
     assert(req.user, 401, '请先登录')
     await next()

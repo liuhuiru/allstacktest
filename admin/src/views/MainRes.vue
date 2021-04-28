@@ -11,53 +11,35 @@
         <el-submenu index="1">
           <template slot="title">
             <i class="el-icon-edit-outline"></i>
-            <span>科研管理</span>
+            <span>科研天地</span>
           </template>
-          <el-submenu index="1-1">
+          <el-menu-item index="/res/project">
             <template slot="title">
-              <i class="el-icon-s-claim"></i><span>项目管理</span></template
+              <i class="el-icon-s-claim"></i
+              ><span>课题组项目汇总</span></template
             >
-            <el-menu-item index="/project/create">新建项目</el-menu-item>
-            <el-menu-item index="/project/list">项目列表</el-menu-item>
-          </el-submenu>
-          <el-submenu index="1-2">
-            <template slot="title"
-              ><i class="el-icon-notebook-2"></i><span>成果管理</span></template
+          </el-menu-item>
+          <el-submenu>
+            <template slot="title">
+              <i class="el-icon-notebook-2"></i
+              ><span>课题组成果汇总</span></template
             >
-            <el-menu-item-group>
-              <template slot="title">论文管理</template>
-              <el-menu-item index="/paper/create">新建论文</el-menu-item>
-              <el-menu-item index="/paper/list">论文列表</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group>
-              <template slot="title">专利管理</template>
-              <el-menu-item index="/patent/create">新建专利</el-menu-item>
-              <el-menu-item index="/patent/list">专利列表</el-menu-item>
-            </el-menu-item-group>
+            <el-menu-item index="/res/paper">科研论文</el-menu-item>
+            <el-menu-item index="/res/patent">科研专利 </el-menu-item>
           </el-submenu>
         </el-submenu>
-        <el-submenu index="2">
+        <el-menu-item index="/res/memeber">
           <template slot="title"
-            ><i class="el-icon-user-solid"></i><span>成员管理</span></template
-          >
-          <el-menu-item-group>
-            <template slot="title">科研人员</template>
-            <el-menu-item index="/researcher/create">新建科研员</el-menu-item>
-            <el-menu-item index="/researcher/list">科研员列表</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group>
-            <template slot="title">管理人员</template>
-            <el-menu-item index="/admin_users/create">新建管理员</el-menu-item>
-            <el-menu-item index="/admin_users/list">管理员列表</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+            ><i class="el-icon-user-solid"></i><span>课题组成员</span></template
+          ></el-menu-item
+        >
         <el-submenu index="3">
           <template slot="title">
             <i class="el-icon-message-solid"></i>
-            <span>通知公告</span>
+            <span>个人页</span>
           </template>
-          <el-menu-item index="/notice/create">新建公告</el-menu-item>
-          <el-menu-item index="/notice/list">通知列表</el-menu-item>
+          <el-menu-item index="/res/userpage">个人中心</el-menu-item>
+          <el-menu-item index="/res/usersetting">个人设置</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -68,15 +50,21 @@
           <div
             style="padding: 10px; color: #333; magin-right: 10px; float: left"
           >
-            欢迎登陆！您的身份是管理员
+            欢迎登陆！{{ this.model.name }}
           </div>
           <el-dropdown>
-            <el-avatar icon="el-icon-user-solid"></el-avatar>
+            <el-avatar :src="this.model.avatar"></el-avatar>
             <el-dropdown-menu slot="dropdown">
-              <!-- <el-dropdown-item icon="el-icon-user">个人中心</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-setting"
+              <el-dropdown-item
+                icon="el-icon-user"
+                @click.native="$router.push(`/res/userpage`)"
+                >个人中心</el-dropdown-item
+              >
+              <el-dropdown-item
+                icon="el-icon-setting"
+                @click.native="$router.push(`/res/usersetting`)"
                 >个人设置</el-dropdown-item
-              > -->
+              >
               <el-dropdown-item
                 icon="el-icon-switch-button"
                 @click.native="logout"
@@ -118,6 +106,7 @@
 <style >
 .el-menu {
   width: 200px;
+  border: 0px;
 }
 
 .el-submenu__title:hover {
@@ -127,11 +116,26 @@
 
 <script>
 export default {
+  data() {
+    return {
+      model: {},
+    };
+  },
   methods: {
     logout() {
       window.localStorage.clear();
       this.$router.push("/login");
     },
+    async fetch() {
+      const id = localStorage.id;
+      // console.log(id);
+      const res = await this.$http.get(`researcher/${id}`);
+      // console.log("res", res);
+      this.model = res.data;
+    },
+  },
+  created() {
+    this.fetch();
   },
 };
 </script>

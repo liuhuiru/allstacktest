@@ -9,7 +9,7 @@
           label-width="150px"
           @submit.native.prevent="save"
         >
-          <el-row :gutter="20">
+          <el-row gutter="20">
             <el-col :span="11">
               <el-form-item label="项目名称" prop="name">
                 <el-input v-model="model.name"></el-input>
@@ -22,7 +22,7 @@
             </el-col>
           </el-row>
 
-          <el-row :gutter="20">
+          <el-row gutter="20">
             <el-col :span="11">
               <el-form-item label="项目级别" prop="name">
                 <el-select v-model="model.level" placeholder="请选择项目级别">
@@ -42,7 +42,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="20">
+          <el-row gutter="20">
             <el-col :span="11">
               <el-form-item label="项目进度">
                 <el-select
@@ -67,7 +67,7 @@
             </el-col>
           </el-row>
 
-          <el-row :gutter="20">
+          <el-row gutter="20">
             <el-col :span="11">
               <el-form-item label="项目经费" props="funds">
                 <el-input v-model="model.funds"></el-input>
@@ -80,7 +80,7 @@
             </el-col>
           </el-row>
 
-          <el-row :gutter="20">
+          <el-row gutter="20">
             <el-col :span="11">
               <el-form-item label="开始时间">
                 <el-date-picker
@@ -126,11 +126,12 @@
         <el-upload
           class="upload-demo"
           ref="upload"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
+          :action="$http.defaults.baseURL + '/upload'"
           :file-list="fileList"
           :auto-upload="false"
+          :on-success="afterUpload"
+          accept=".docx"
+          limit="1"
         >
           <el-button slot="trigger" size="small" type="primary"
             >选取文件</el-button
@@ -142,7 +143,9 @@
             @click="submitUpload"
             >上传到服务器</el-button
           >
-          <div slot="tip" class="el-upload__tip">请上传论文的电子版</div>
+          <div slot="tip" class="el-upload__tip">
+            请上传立项申请书（未结项）或结项报告（已结项）,仅接受docx类型文档
+          </div>
         </el-upload>
       </el-tab-pane>
     </el-tabs>
@@ -179,6 +182,13 @@ export default {
     async fetch() {
       const res = await this.$http.get(`project/${this.id}`);
       this.model = res.data;
+    },
+    submitUpload() {
+      this.model.url = this.$refs.upload.submit();
+    },
+    afterUpload(res) {
+      this.$set(this.model, "url", res.url);
+      this.save();
     },
   },
   created() {

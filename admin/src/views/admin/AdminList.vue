@@ -1,4 +1,4 @@
-  \<template>
+<template>
   <div>
     <el-table :data="items" stripe style="width: 100%">
       <el-table-column prop="_id" label="ID" width=""> </el-table-column>

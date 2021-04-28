@@ -5,7 +5,7 @@
     </el-card>
     <el-card>
       <el-form label-width="120px" @submit.native.prevent="save">
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="10">
             <el-form-item label="用户名">
               <el-input v-model="model.username"></el-input>
@@ -13,11 +13,11 @@
           </el-col>
           <el-col :span="10">
             <el-form-item label="密码">
-              <el-input v-model="model.password" :disabled="true"></el-input>
+              <el-input v-model="model.password"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="10">
             <el-form-item label="姓名">
               <el-input v-model="model.name"></el-input>
@@ -32,7 +32,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="10">
             <el-form-item label="年龄">
               <el-input v-model.number="model.age"></el-input>
@@ -44,7 +44,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="10">
             <el-form-item label="最后学位">
               <el-input v-model="model.degree"></el-input>
@@ -56,10 +56,15 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="10">
             <el-form-item label="职称">
-              <el-input v-model="model.title"></el-input>
+              <el-select v-model="model.title" placeholder="请选择">
+                <el-option label="讲师" value="讲师"></el-option>
+                <el-option label="副教授" value="副教授"></el-option>
+                <el-option label="教授" value="教授"></el-option>
+                <el-option label="(学生)" value="学生"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="10">
@@ -84,7 +89,7 @@ export default {
   data() {
     return {
       model: {
-        password: "123456",
+        role: "researcher",
       },
     };
   },
@@ -106,7 +111,7 @@ export default {
     //根据id获取某个科研人员信息
     async fetch() {
       const res = await this.$http.get(`researcher/${this.id}`);
-      console.log("res", res);
+      // console.log("res", res);
       this.model = res.data;
     },
   },

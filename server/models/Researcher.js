@@ -2,7 +2,14 @@ const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
   username: { type: String },
-  password: { type: String },
+  password: {
+    type: String,
+    select: false,
+    set(val) {
+      return require('bcrypt').hashSync(val, 10)
+    }
+  },
+  role: { type: String },
   name: { type: String },
   age: { type: Number },
   email: { type: String },
@@ -11,7 +18,7 @@ const schema = new mongoose.Schema({
   direction: { type: String },
   title: { type: String },
   institution: { type: String },
-  test: { type: String }
+  avatar: { type: String }
 })
 
 module.exports = mongoose.model('Researcher', schema)

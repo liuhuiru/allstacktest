@@ -11,7 +11,8 @@ const schema = new mongoose.Schema({
   start: { type: Date },
   end: { type: Date },
   member: { type: String },
-  content: { type: String }
+  content: { type: String },
+  url: { type: String }
 })
 
 module.exports = mongoose.model('Project', schema)

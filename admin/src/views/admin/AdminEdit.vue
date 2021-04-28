@@ -5,7 +5,7 @@
     </el-card>
     <el-card>
       <el-form label-width="120px" @submit.native.prevent="save">
-        <el-row :gutter="20">
+        <el-row gutter="20">
           <el-col :span="12">
             <el-form-item label="用户名">
               <el-input v-model="model.username"></el-input>
@@ -34,7 +34,9 @@ export default {
   },
   data() {
     return {
-      model: {},
+      model: {
+        role: "admin",
+      },
     };
   },
   methods: {
@@ -52,10 +54,10 @@ export default {
       });
     },
 
-    //根据id获取某个科研人员信息
+    //根据id获取某个管理人员信息
     async fetch() {
       const res = await this.$http.get(`admin_users/${this.id}`);
-      console.log("res", res);
+      // console.log("res", res);
       this.model = res.data;
     },
   },

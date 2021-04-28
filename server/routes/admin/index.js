@@ -2,12 +2,17 @@ module.exports = app => {
 
   const express = require('express')
   const router = express.Router()
+  const jwt = require('jsonwebtoken')
+  const assert = require("http-assert")
+  const multer = require('multer')
 
 
   const Researcher = require('../../models/Researcher')
   const AdminUser = require('../../models/AdminUser')
   const Project = require('../../models/Project')
   const Paper = require('../../models/Paper')
+  const Patent = require('../../models/Patent')
+  const Notice = require('../../models/Notice')
 
   //登录校验中间件
   const authMiddleware = require('../../middleware/auth')
@@ -131,31 +136,94 @@ module.exports = app => {
     })
   })
 
-  //登录接口
-  router.post('/login', async (req, res) => {
-    const { username, password } = req.body
-    //根据用户名找用户
-    const user = await AdminUser.findOne({ username }).select('+password')
-    // if (!user) {
-    //   return res.status(422).send({
-    //     message: '用户不存在'
-    //   })
-    // }
-    assert(user, 422, '用户不存在')
-    //校验密码
-    const isValid = require('bcrypt').compareSync(password, user.password)
-    // if (!isValid) {
-    //   return res.status(422).send({
-    //     message: '密码错误'
-    //   })
-    // }
-    assert(isValid, 422, '密码错误')
-
-    //返回token
-    const token = jwt.sign({ id: user._id }, app.get('secret'))
-    res.send({ token })
+  //*********************************************************************** */
+  //创建专利
+  router.post('/patent', authMiddleware(), async (req, res) => {
+    const model = await Patent.create(req.body)
+    res.send(model)
+  })
+  //获取专利列表
+  router.get('/patent', authMiddleware(), async (req, res) => {
+    const items = await Patent.find()
+    res.send(items)
+  })
+  //获取专利信息
+  router.get('/patent/:id', authMiddleware(), async (req, res) => {
+    const model = await Patent.findById(req.params.id)
+    res.send(model)
+  })
+  //修改专利
+  router.put('/patent/:id', authMiddleware(), async (req, res) => {
+    const model = await Patent.findByIdAndUpdate(req.params.id, req.body)
+    res.send(model)
+  })
+  //删除专利
+  router.delete('/patent/:id', authMiddleware(), async (req, res) => {
+    await Patent.findByIdAndDelete(req.params.id, req.body)
+    res.send({
+      success: true
+    })
   })
 
+
+  //*************************************************************************
+  //创建公告
+  router.post('/notice', authMiddleware(), async (req, res) => {
+    const model = await Notice.create(req.body)
+    res.send(model)
+  })
+  //获取公告列表
+  router.get('/notice', authMiddleware(), async (req, res) => {
+    const items = await Notice.find()
+    res.send(items)
+  })
+  //获取公告信息
+  router.get('/notice/:id', authMiddleware(), async (req, res) => {
+    const model = await Notice.findById(req.params.id)
+    res.send(model)
+  })
+  //修改公告
+  router.put('/notice/:id', authMiddleware(), async (req, res) => {
+    const model = await Notice.findByIdAndUpdate(req.params.id, req.body)
+    res.send(model)
+  })
+  //删除公告
+  router.delete('/notice/:id', authMiddleware(), async (req, res) => {
+    await Notice.findByIdAndDelete(req.params.id, req.body)
+    res.send({
+      success: true
+    })
+  })
+
+
+  //******************************************************************************** */
+  //登录接口
+  router.post('/login', async (req, res) => {
+    const { username, password, role } = req.body
+    //根据用户名找用户,密码校验
+    console.log(role)
+    if (role === 'admin') {
+      const user = await AdminUser.findOne({ username }).select('+password')
+      assert(user, 422, '用户不存在')
+      const isValid = require('bcrypt').compareSync(password, user.password)
+      assert(isValid, 422, '密码错误')
+      const id = user._id
+      const token = jwt.sign({ id: user._id }, app.get('secret'))
+      res.send({ token, role, id })
+    }
+    else {
+      const user = await Researcher.findOne({ username }).select('+password')
+      assert(user, 422, '用户不存在')
+      const isValid = require('bcrypt').compareSync(password, user.password)
+      assert(isValid, 422, '密码错误')
+      const id = user._id
+      const token = jwt.sign({ id: user._id }, app.get('secret'))
+      res.send({ token, role, id })
+    }
+
+  })
+
+  //********************************************************************* */
   app.use('/admin/api', router)
 
   //错误处理
@@ -164,4 +232,12 @@ module.exports = app => {
       message: err.message
     })
   })
+
+  const upload = multer({ dest: __dirname + '/../../uploads' })
+  app.post('/admin/api/upload', upload.single('file'), async (req, res) => {
+    const file = req.file
+    file.url = `http://localhost:3000/uploads/${file.filename}`
+    res.send(file)
+  })
+
 }
