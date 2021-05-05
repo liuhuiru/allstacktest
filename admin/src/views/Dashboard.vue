@@ -1,56 +1,166 @@
 <template>
-  <el-row :gutter="40" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-people">
-          <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+  <div>
+    <el-row :gutter="40" class="panel-group">
+      <el-col :span="5" :offset="1" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-people">
+            <i class="el-icon-user-solid card-panel-icon"></i>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">教授</div>
+            <span class="card-panel-num">{{ this.jiaoshouNum }}位</span>
+          </div>
         </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">New Visits</div>
-          ii
+      </el-col>
+      <el-col :span="5" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-message">
+            <i class="el-icon-user-solid card-panel-icon"></i>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">副教授</div>
+            <span class="card-panel-num">{{ this.fujiaoNum }}位</span>
+          </div>
         </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-message">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+      </el-col>
+      <el-col :span="5" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-money">
+            <i class="el-icon-user-solid card-panel-icon"></i>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">讲师</div>
+            <span class="card-panel-num">{{ this.jiangshiNum }}位</span>
+          </div>
         </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Messages</div>
-          ii
+      </el-col>
+      <el-col :span="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-shopping">
+            <i class="el-icon-user-solid card-panel-icon"></i>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">博/硕士生</div>
+            <span class="card-panel-num">{{ this.xueshengNum }}位</span>
+          </div>
         </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="money" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Purchases</div>
-          ii
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Shoppings</div>
-          ii
-        </div>
-      </div>
-    </el-col>
-  </el-row>
+      </el-col>
+    </el-row>
+
+    <div
+      style="width: 500px; height: 500px"
+      ref="memberChart"
+      class="memberChart"
+    ></div>
+    <div
+      style="width: 500px; height: 500px"
+      ref="achievementChart"
+      class="achievementChart"
+    ></div>
+  </div>
 </template>
 
 <script>
+const echarts = require("echarts");
 export default {
-  name: "PanelGroup",
-  methods: {},
+  // components: {
+  // },
+  data() {
+    return {
+      researcher: [],
+      project: [],
+      paper: [],
+      patent: [],
+      jiaoshouNum: 0,
+      fujiaoNum: 0,
+      jiangshiNum: 0,
+      xueshengNum: 0,
+      name: "课题组科研现状",
+      xData: ["科研项目", "科研论文", "科研专利"],
+      yData: [3, 5, 6],
+    };
+  },
+  methods: {
+    async fetch() {
+      const res1 = await this.$http.get("researcher");
+      this.researcher = res1.data;
+      const res2 = await this.$http.get("project");
+      this.project = res2.data;
+      const res3 = await this.$http.get("paper");
+      this.paper = res3.data;
+      const res4 = await this.$http.get("patent");
+      this.patent = res4.data;
+      this.count();
+      this.initmemberCharts();
+      this.initachievementCharts();
+    },
+    count() {
+      for (let i = 0; i < this.researcher.length; i++) {
+        switch (this.researcher[i].title) {
+          case "教授":
+            this.jiaoshouNum++;
+            break;
+          case "副教授":
+            this.fujiaoNum++;
+            break;
+          case "讲师":
+            this.jiangshiNum++;
+            break;
+          case "学生":
+            this.xueshengNum++;
+            break;
+        }
+      }
+    },
+    initmemberCharts() {
+      let myChart = echarts.init(this.$refs.memberChart);
+      // console.log(this.$refs.chart)
+      // 绘制图表
+      myChart.setOption({
+        title: { text: "课题组人员构成", left: "center" },
+        roseType: "angle",
+        tooltip: {},
+        series: [
+          {
+            name: "人数",
+            type: "pie",
+            radius: "55%",
+            data: [
+              { value: this.jiaoshouNum, name: "教授" },
+              { value: this.jiangshiNum, name: "讲师" },
+              { value: this.fujiaoNum, name: "副教授" },
+              { value: this.xueshengNum, name: "博/硕士生" },
+            ],
+          },
+        ],
+      });
+    },
+    initachievementCharts() {
+      let myChart = echarts.init(this.$refs.achievementChart);
+      // console.log(this.$refs.chart)
+      // 绘制图表
+      myChart.setOption({
+        title: { text: "课题组成果汇总", left: "center" },
+        roseType: "angle",
+        tooltip: {},
+        series: [
+          {
+            name: "个数",
+            type: "pie",
+            radius: "50%",
+            data: [
+              { value: this.project.length, name: "科研项目" },
+              { value: this.patent.length, name: "科研专利" },
+              { value: this.paper.length, name: "科研论文" },
+            ],
+          },
+        ],
+      });
+    },
+  },
+  mounted() {
+    this.fetch();
+  },
 };
 </script>
 
@@ -161,5 +271,11 @@ export default {
       float: none !important;
     }
   }
+}
+.memberChart {
+  float: left;
+}
+.achievementChart {
+  float: left;
 }
 </style>

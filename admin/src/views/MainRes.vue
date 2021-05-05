@@ -28,7 +28,7 @@
             <el-menu-item index="/res/patent">科研专利 </el-menu-item>
           </el-submenu>
         </el-submenu>
-        <el-menu-item index="/res/memeber">
+        <el-menu-item index="/res/researcher">
           <template slot="title"
             ><i class="el-icon-user-solid"></i><span>课题组成员</span></template
           ></el-menu-item
